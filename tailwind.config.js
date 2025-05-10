@@ -7,5 +7,9 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: ["tailwindcss-scrollbar"],
+  // 滚动条样式
+  variants: {
+    scrollbar: ['rounded']
+  }
 }

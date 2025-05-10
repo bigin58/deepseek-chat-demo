@@ -65,7 +65,7 @@ function DeepSeekQuery() {
       {data && (
         <div className="mt-6 p-4 bg-gray-100 rounded">
           <h2 className="text-lg font-semibold mb-2">DeepSeek 回复:</h2>
-          <div className="whitespace-pre-wrap">{data.askDeepSeek}</div>
+          <div className="whitespace-pre-wrap max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-gray-200 scrollbar-thumb-rounded">{data.askDeepSeek}</div>
         </div>
       )}
     </div>

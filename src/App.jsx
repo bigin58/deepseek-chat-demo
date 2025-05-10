@@ -27,9 +27,14 @@ function DeepSeekQuery() {
     e.preventDefault();
     setData({});
     setLoading(true);
-    const { data, loading } = await refetch({ prompt });
-    setLoading(loading);
-    setData(data);
+    const { data, loading, error } = await refetch({ prompt });
+    if (error) {
+      console.error(error);
+      setLoading(false);
+    } else {
+      setLoading(loading);
+      setData(data);
+    }
   };
 
   return (
@@ -57,7 +62,7 @@ function DeepSeekQuery() {
         </button>
       </form>
 
-      {data  && (
+      {data && (
         <div className="mt-6 p-4 bg-gray-100 rounded">
           <h2 className="text-lg font-semibold mb-2">DeepSeek 回复:</h2>
           <div className="whitespace-pre-wrap">{data.askDeepSeek}</div>

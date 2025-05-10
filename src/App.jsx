@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, } from '@apollo/client';
 // 创建Apollo客户端
 const client = new ApolloClient({
-  uri: 'https://deepseek-api-worker.bigbin0508.workers.dev/graphql',
+  uri: 'https://deepseek-api-worker.bigbin0508.workers.dev',
   cache: new InMemoryCache(),
 });
 

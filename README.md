@@ -1,2 +1,0 @@
-# coderstation
-# deepseek-chat-demo

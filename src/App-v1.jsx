@@ -1,50 +1,50 @@
-import { useState, useEffect } from 'react';
-import { MastraClient } from "@mastra/client-js";
+import { useState } from 'react';
+import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, } from '@apollo/client';
+// 创建Apollo客户端
+const client = new ApolloClient({
+  uri: 'https://deepseek-api-worker.bigbin0508.workers.dev',
+  cache: new InMemoryCache(),
+});
+
+// GraphQL查询
+const ASK_DEEPSEEK = gql`
+      query AskDeepSeek($prompt: String!) {
+        askDeepSeek(prompt: $prompt)
+      }
+    `;
 
 //  DeepSeek查询组件
 function DeepSeekQuery() {
   const [prompt, setPrompt] = useState('');
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
-
-  const client = new MastraClient();
-  const agent = client.getAgent("Code Review Agent");
-  
+  const { refetch } = useQuery(ASK_DEEPSEEK, {
+    variables: { prompt },
+    skip: true,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setData({});
-    
+    setLoading(true);
     try {
-      const response = await agent.stream({
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        baseUrl: "https://mastra.bigbin0508.workers.dev/",
-      });
-
-      let fullResponse = '';
-      for await (const chunk of response) {
-        if (chunk.content) {
-          fullResponse += chunk.content;
-          setData({ askDeepSeek: fullResponse });
-        }
+      const { data, loading, error } = await refetch({ prompt });
+      if (error) {
+        console.error(error);
+        setLoading(false);
+      } else {
+        setLoading(loading);
+        setData(data);
       }
     } catch (error) {
-      console.error('Error:', error);
-      setData({ askDeepSeek: '发生错误，请稍后重试' });
-    } finally {
+      console.error(error);
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-6 text-center">代码审计助手</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">DeepSeek AI 助手</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -69,7 +69,7 @@ function DeepSeekQuery() {
 
       {data && (
         <div className="mt-6 p-4 bg-gray-100 rounded">
-          <h2 className="text-lg font-semibold mb-2">分析结果:</h2>
+          <h2 className="text-lg font-semibold mb-2">DeepSeek 回复:</h2>
           <div className="whitespace-pre-wrap max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-gray-200 scrollbar-thumb-rounded">{data.askDeepSeek}</div>
         </div>
       )}
@@ -79,8 +79,10 @@ function DeepSeekQuery() {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <DeepSeekQuery />
-    </div>
+    <ApolloProvider client={client}>
+      <div className="min-h-screen bg-gray-100 py-8">
+        <DeepSeekQuery />
+      </div>
+    </ApolloProvider>
   );
 }
